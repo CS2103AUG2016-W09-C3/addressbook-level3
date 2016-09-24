@@ -5,6 +5,7 @@ import seedu.addressbook.data.person.*;
 import seedu.addressbook.data.tag.Tag;
 import seedu.addressbook.data.tag.UniqueTagList;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,37 +26,18 @@ public class AddFromFileCommand extends Command {
     public static final String MESSAGE_FILE_NOT_FOUND = "File not found.";
     public static final String MESSAGE_CANNOT_READ_FILE = "Unable to load file.";
 
-    private final Person toAdd;
+    private final String fileName;
+    private ArrayList<Person> toAdd = new ArrayList<Person>();
 
     /**
      * Convenience constructor using raw values.
      *
-     * @throws IllegalValueException if any of the raw values are invalid
+     * @throws IllegalValueException
+     *             if any of the raw values are invalid
      */
-    public AddFromFileCommand(String name,
-                      String phone, boolean isPhonePrivate,
-                      String email, boolean isEmailPrivate,
-                      String address, boolean isAddressPrivate,
-                      Set<String> tags) throws IllegalValueException {
-        final Set<Tag> tagSet = new HashSet<>();
-        for (String tagName : tags) {
-            tagSet.add(new Tag(tagName));
-        }
-        this.toAdd = new Person(
-                new Name(name),
-                new Phone(phone, isPhonePrivate),
-                new Email(email, isEmailPrivate),
-                new Address(address, isAddressPrivate),
-                new UniqueTagList(tagSet)
-        );
-    }
+    public AddFromFileCommand(String fileName) throws IllegalValueException {
 
-    public AddFromFileCommand(Person toAdd) {
-        this.toAdd = toAdd;
-    }
-
-    public ReadOnlyPerson getPerson() {
-        return toAdd;
+        this.fileName = fileName;
     }
 
     @Override
