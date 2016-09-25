@@ -34,7 +34,8 @@ public class Parser {
                    + " (?<isAddressPrivate>p?)a/(?<address>[^/]+)"
                    + "(?<tagArguments>(?: t/[^/]+)*)"); // variable number of tags);
 
-
+    public static final Pattern FILE_ARGS_FORMAT =
+            Pattern.compile("([^.]+\\.[^.]+)");
     /**
      * Signals that the user input could not be parsed.
      */
@@ -73,11 +74,17 @@ public class Parser {
             case EditCommand.COMMAND_WORD:
                 return prepareEdit(arguments);
 
+            case AddFromFileCommand.COMMAND_WORD:
+                return prepareAddFromFile(arguments);
+                
             case DeleteCommand.COMMAND_WORD:
                 return prepareDelete(arguments);
 
             case ClearCommand.COMMAND_WORD:
                 return new ClearCommand();
+                
+            case RemoveTag.COMMAND_WORD:
+            	return new RemoveTag(arguments);
 
             case FindCommand.COMMAND_WORD:
                 return prepareFind(arguments);
@@ -162,9 +169,29 @@ public class Parser {
     }
 
     /**
+     * Parses arguments in the context of the add from file command.
+     *
+     * @param args full command args string
+     * @return the prepared command
+     */
+    private Command prepareAddFromFile(String args){
+        final Matcher matcher = FILE_ARGS_FORMAT.matcher(args.trim());
+        // Validate arg string format
+        if (!matcher.matches()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddFromFileCommand.MESSAGE_USAGE));
+        }
+        try {
+            return new AddFromFileCommand(
+                    args.trim()
+            );
+        } catch (IllegalValueException ive) {
+            return new IncorrectCommand(ive.getMessage());
+        }
+    }
+    /**
      * Checks whether the private prefix of a contact detail in the add command's arguments string is present.
      */
-    private static boolean isPrivatePrefixPresent(String matchedPrefix) {
+    public static boolean isPrivatePrefixPresent(String matchedPrefix) {
         return matchedPrefix.equals("p");
     }
 
@@ -172,7 +199,7 @@ public class Parser {
      * Extracts the new person's tags from the add command's tag arguments string.
      * Merges duplicate tag strings.
      */
-    private static Set<String> getTagsFromArgs(String tagArguments) throws IllegalValueException {
+    public static Set<String> getTagsFromArgs(String tagArguments) throws IllegalValueException {
         // no tags
         if (tagArguments.isEmpty()) {
             return Collections.emptySet();
@@ -197,7 +224,7 @@ public class Parser {
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
         }
     }
-
+    
     /**
      * Parses arguments in the context of the view command.
      *
