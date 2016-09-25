@@ -27,7 +27,7 @@ public class Parser {
                     + "(?<tagArguments>(?: t/[^/]+)*)"); // variable number of tags
     
     public static final Pattern PERSON_INDEX_WITH_DATA_ARGS_FORMAT = 
-            Pattern.compile("(?<targetIndex>.+)"
+            Pattern.compile("(?<targetIndex>\\d+)"
                    + " (?<name>[^/]+)"
                    + " (?<isPhonePrivate>p?)p/(?<phone>[^/]+)"
                    + " (?<isEmailPrivate>p?)e/(?<email>[^/]+)"
